@@ -1,24 +1,75 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-const Name = React.createClass({
-    render: function() {
+import DateRangePicker from 'react-daterange-picker';
+import moment from 'moment';
+import {} from 'moment-range';
+
+const stateDefinitions = {
+    available: {
+        color: null,
+        label: 'Available',
+    },
+    enquire: {
+        color: '#ffd200',
+        label: 'Enquire',
+    },
+    unavailable: {
+        selectable: false,
+        color: '#78818b',
+        label: 'Unavailable',
+    },
+};
+
+const dateRanges = [
+    {
+        state: 'enquire',
+        range: moment.range(
+            moment().add(2, 'weeks').subtract(5, 'days'),
+            moment().add(2, 'weeks').add(6, 'days')
+        ),
+    },
+    {
+        state: 'unavailable',
+        range: moment.range(
+            moment().add(3, 'weeks'),
+            moment().add(3, 'weeks').add(5, 'days')
+        ),
+    },
+];
+
+const DatePicker = React.createClass({
+    getInitialState() {
+        return {
+            value: null,
+        };
+    },
+    handleSelect(range, states) {
+        // range is a moment-range object
+        this.setState({
+            value: range,
+            states: states,
+        });
+    },
+
+    render() {
         return (
-            <span>{this.props.name}</span>
+            <DateRangePicker
+                firstOfWeek={1}
+                numberOfCalendars={2}
+                selectionType='range'
+                minimumDate={new Date()}
+                stateDefinitions={stateDefinitions}
+                dateStates={dateRanges}
+                defaultState="available"
+                showLegend={true}
+                value={this.state.value}
+                onSelect={this.handleSelect} />
         );
-    }
+    },
 });
-const HelloWorld = React.createClass({
-    render: function() {
-        return (
-            <div>
-                <h1>Hello, world!</h1>
-                <Name name="Test" />
-            </div>
-        );
-    }
-});
+
 ReactDOM.render(
-    <HelloWorld />,
+    <DatePicker />,
     document.getElementById('content')
 );
